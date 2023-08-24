@@ -151,3 +151,41 @@ linters:
           url: https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform
     test_folder: terraform_fmt
     version_extract_regex: "(?<=Terraform v)\\d+(\\.\\d+)+"
+  # TFSEC
+  - linter_name: tfsec
+    name: TERRAFORM_TFSEC
+    can_output_sarif: true
+    is_formatter: false
+    linter_url: https://aquasecurity.github.io/tfsec
+    linter_repo: https://github.com/aquasecurity/tfsec
+    linter_banner_image_url: https://github.com/aquasecurity/tfsec/blob/master/docs/imgs/logo.png
+    cli_version_arg_name: --version
+    cli_lint_mode: project
+    cli_help_arg_name: --help
+    examples:
+      - "tfsec ."
+    install:
+      apk:
+        - curl
+        - gcompat
+        - libc6-compat
+        - libstdc++
+      dockerfile:
+        - |
+          RUN ln -s /lib/libc.so.6 /usr/lib/libresolv.so.2 && \
+              curl --retry 5 --retry-delay 5 -sLv https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | /bin/bash -s
+    ide:
+      vim:
+        - name: tfsec
+          url: https://github.com/aquasecurity/vim-tfsec
+      idea:
+        - name: Tfsec Findings Explorer
+          url: https://plugins.jetbrains.com/plugin/18687-tfsec-findings-explorer
+          id: com.aquasecurity.plugins.intellij-tfsec
+      vscode:
+        - name: tfsec
+          url: https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec
+    test_folder: terraform_tfsec
+    cli_sarif_args: ["--format", "sarif", "--out", "{{SARIF_OUTPUT_FILE}}"]
+    cli_lint_errors_count: regex_number
+    cli_lint_errors_regex: ".* passed, ([0-9]+) potential problem(s) detected."
